@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Caption Generator</title>
+    
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* Custom Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #f2f2f2, #e6e6e6);
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 100px auto;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 0.5s forwards 0.5s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 5px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+        
+        label {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        label:hover {
+            background-color: #0056b3;
+            transform: translateY(-3px);
+        }
+        
+        h3 {
+            margin-top: 40px;
+            font-weight: 600;
+        }
+
+        button {
+            background-color: #007bff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #imagePreview img {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        #imagePreview:hover img {
+            transform: scale(1.05);
+        }
+
+        #alphabetLoader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .alphabet-bubble {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #88bbf1;
+            position: absolute;
+            bottom: 0;
+            animation: bubbleRise 5s infinite;
+            text-align: center;
+            line-height: 40px;
+            font-size: 17px;
+            color: white;
+            font-weight: bold;
+            animation: bubbleRiseAndBurst 10s infinite;
+        }
+
+        .alphabet-bubble:nth-child(1) {
+            animation-delay: 0.5s;
+            left: 10%;
+        }
+
+        .alphabet-bubble:nth-child(2) {
+            animation-delay: 1s;
+            left: 20%;
+        }
+
+        .alphabet-bubble:nth-child(3) {
+            animation-delay: 1.5s;
+            left: 25%;
+        }
+
+        .alphabet-bubble:nth-child(4) {
+            animation-delay: 0.5s;
+            left: 35%;
+        }
+
+        .alphabet-bubble:nth-child(5) {
+            animation-delay: 1s;
+            left: 50%;
+        }
+
+        .alphabet-bubble:nth-child(6) {
+            animation-delay: 1.5s;
+            left: 70%;
+        }
+
+
+        .alphabet-bubble:nth-child(5) {
+            animation-delay: 1s;
+            left: 85%;
+        }
+
+        .alphabet-bubble:nth-child(6) {
+            animation-delay: 1.5s;
+            left: 90%;
+        }
+        @keyframes bubbleRise {
+            0% {
+                bottom: 0;
+            }
+            100% {
+                bottom: 100vh;
+                opacity: 0;
+            }
+        }
+
+        @keyframes bubbleRiseAndBurst {
+            0% {
+                bottom: 0;
+                opacity: 1;
+                transform: scale(1);
+            }
+            80% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            95% {
+                opacity: 0.5;
+            }
+            100% {
+                bottom: 95vh;
+                opacity: 0;
+                transform: scale(1.5); /* scale up the bubble for a burst effect */
+            }
+        }
+        .caption-text p {
+            display: inline-block;
+            padding: 12px 24px;
+            background: radial-gradient(circle, #A0E7E5, #94D2BD, #64C7CC);
+            border: none;
+            border-radius: 35px;
+            color: rgb(176, 26, 184);
+            font-weight: bold;
+            text-shadow: 0 0 5px #ffffff, 0 0 10px #FF69B4;
+            box-shadow: 0px 10px 20px -10px rgba(0, 0, 0, 0.3);
+            animation: ripple 2s infinite;
+            transition: transform 0.3s ease;
+        }
+
+        .caption-text p:hover {
+            transform: scale(1.05);
+        }
+        @keyframes ripple {
+            0% {
+                box-shadow: 0px 0px 0px 1px rgba(255, 105, 180, 0.4);
+            }
+            50% {
+                box-shadow: 0px 0px 0px 15px rgba(255, 105, 180, 0);
+            }
+            100% {
+                box-shadow: 0px 0px 0px 0px rgba(255, 105, 180, 0);
+            }
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <div id="alphabetLoader" class="text-center" style="display: none;">
+        <div class="alphabet-bubble"></div>
+        <div class="alphabet-bubble"></div>
+        <div class="alphabet-bubble"></div>
+        <div class="alphabet-bubble"></div>
+        <div class="alphabet-bubble"></div>
+        <div class="alphabet-bubble"></div>
+        <div class="alphabet-bubble"></div>
+        <div class="alphabet-bubble"></div>
+        <div class="alphabet-bubble"></div>
+        <div class="alphabet-bubble"></div>
+        <div class="alphabet-bubble"></div>
+        <div class="alphabet-bubble"></div>
+        <div class="caption-text"   >
+            <p>Generating Caption...</p> 
+        </div>
+        
+    </div>
+    
+    
+    
+    
+    <div class="container">
+        <h1 class="text-center">Image Caption Generator</h1>
+        <form action="/" method="post" enctype="multipart/form-data">
+            <!-- File input button -->
+            <div class="custom-file mt-4">
+                <input type="file" class="custom-file-input" id="fileInput" name="image_file">
+                <label class="custom-file-label" for="fileInput">Choose file</label>
+            </div>
+            
+            <!-- Placeholder for instant image preview -->
+            <div class="text-center mt-4" id="imagePreview">
+                {% if img_url %}
+                    <img src="{{ img_url }}" alt="Uploaded Image" class="img-fluid" style="max-height: 400px; border-radius: 8px;">
+                {% endif %}
+            </div>
+            
+            <!-- Submit button -->
+            <button type="submit" class="btn btn-primary btn-block mt-4">Generate Caption</button>
+        </form>
+                
+        {% if caption %}
+        <h3>Generated Caption:</h3>
+        <p>{{ caption }}</p>
+        {% endif %}
+    </div>
+    
+    <!-- Include Bootstrap JS and Popper.js -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <!-- Script for instant image preview and to show the selected file name in the label -->
+    <script>
+        $("button[type='submit']").click(function() {
+            $("#loader").show(); // Show loader
+        });
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#imagePreview').html('<img src="'+e.target.result+'" alt="Uploaded Image" class="img-fluid" style="max-height: 400px; border-radius: 8px;">');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        $('#fileInput').change(function(){
+            readURL(this);
+            // Update the file name label
+            var fileName = $(this).val().split('\\').pop(); 
+            $(this).next('.custom-file-label').html(fileName);
+        });
+
+        function randomAlphabet() {
+            const alphabets = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            return alphabets.charAt(Math.floor(Math.random() * alphabets.length));
+        }
+
+        function randomPosition() {
+            return Math.floor(Math.random() * 90) + 1;  // Random number between 1% and 90%
+        }
+
+        setInterval(function() {
+            $(".alphabet-bubble").each(function() {
+                $(this).text(randomAlphabet());
+            });
+        }, 1000);
+
+        // Show the loader when the button is clicked
+        $("button[type='submit']").click(function() {
+            $("#alphabetLoader").show(); // Show the alphabet loader
+        });
+
+        function generateBubble() {
+            const bubble = $('<div class="alphabet-bubble"></div>');
+            bubble.text(randomAlphabet());
+            bubble.css("left", randomPosition() + "%");
+            $("#alphabetLoader").append(bubble);
+        }
+
+        // Generate an initial set of bubbles
+        // for (let i = 0; i < 0; i++) {
+            generateBubble();
+        // }
+
+        // Periodically generate new bubbles
+        setInterval(generateBubble, 2000);
+
+        // Periodically remove old bubbles to prevent too many bubbles in the DOM
+        setInterval(function() {
+            if ($(".alphabet-bubble").length > 15) {
+                $(".alphabet-bubble").first().remove();
+            }
+        }, 2500);
+
+
+    </script>
+</body>
+
+</html>

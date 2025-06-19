@@ -1,0 +1,8 @@
+pickleshare
+Flask
+numpy
+pandas
+keras
+tensorflow
+pillow
+matplotlib
